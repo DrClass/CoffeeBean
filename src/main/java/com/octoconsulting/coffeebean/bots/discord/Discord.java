@@ -1,10 +1,14 @@
 package com.octoconsulting.coffeebean.bots.discord;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
@@ -22,7 +26,14 @@ public class Discord {
 	public static void init() {
 		// TODO: Remove the bot token and move it to a config which is git ignored.
 		// Discord gets mad when you hardcode bot tokens.
-		String token = "NjE2NjgyOTE0NjU0MDYwNTY0.XWgIuA.INC4Y88CYjYv-VYjyspArU7Qb4s";
+		
+		File file = new File("src/main/resources/token.txt");
+		String token = "";
+		try {
+			token = FileUtils.readFileToString(file, Charset.defaultCharset()).trim();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		discordBot = new DiscordApiBuilder().setToken(token).login().join();
 		discordBot.addMessageCreateListener(event -> {
 			if (!event.getMessageAuthor().isBotUser()) {

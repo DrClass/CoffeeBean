@@ -39,8 +39,8 @@ public class Discord {
 			if (!event.getMessageAuthor().isBotUser()) {
 				if (event.getMessage().getMentionedUsers().stream().map(u -> u.getId()).collect(Collectors.toList())
 						.contains(discordBot.getClientId())
-						|| event.getMessageContent().toLowerCase().startsWith("!coffeebean")
-						|| event.getMessageContent().toLowerCase().startsWith("/coffeebean")) {
+						|| event.getMessageContent().toLowerCase().startsWith("!cb")
+						|| event.getMessageContent().toLowerCase().startsWith("/cb")) {
 					CodeBlock block = new CodeBlock(BotType.DISCORD, MessageUtils.extractCodeLanguage(event.getMessageContent()),
 							MessageUtils.extractCodeBlock(event.getMessageContent()), buildIdTrace(event));
 					CodeQueue.addToQueue(block);

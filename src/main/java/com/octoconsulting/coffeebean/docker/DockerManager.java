@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -57,26 +59,34 @@ public class DockerManager implements Runnable {
 						myWriter.write(block.getCode());
 						myWriter.close();
 						
-						DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-						DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder().dockerHost(config.getDockerHost()).sslConfig(config.getSSLConfig()).maxConnections(100).connectionTimeout(Duration.ofSeconds(30)).responseTimeout(Duration.ofSeconds(45)).build();
-						DockerClient dockerClient = DockerClientImpl.getInstance(config, httpClient);
-						dockerClient.pingCmd().exec();
-						
-						
-						/**
-						ProcessBuilder pb = new ProcessBuilder("docker", "run --rm -v \"$PWD\":/usr/src/myapp openjdk:16 javac Main.java");
+						//  --rm -v \"$PWD\":/usr/src/myapp openjdk:16 javac Main.java
+						ProcessBuilder pb = new ProcessBuilder("docker", "run", "--rm", "-v", path.toString() + ":/usr/src/myapp", "-w", "/usr/src/myapp", "openjdk:16", "javac", "Main.java");
 						Process p = pb.start();
 						boolean success = p.waitFor(30, TimeUnit.SECONDS);
-						if (!success) {
-							CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "TIMEOUT ERROR!!!\nDoing some sudoku...", block.getIdChain()));
-						}
 
 						System.out.println(path.toString());
-						CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), printResults(p), block.getIdChain()));
-						**/
-						//deleteDirectory(path);
+						
+						if (p.isAlive()) {
+							CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "Could not get exit code as process is still running", block.getIdChain()));
+						} else {
+							String exitValue = String.format("Exited with code: %d", p.exitValue());
+							CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), exitValue, block.getIdChain()));
+						}
+						CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "Errors:\n" + printError(p), block.getIdChain()));
+						CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "Output:\n" + printResults(p), block.getIdChain()));
+						
+						if (!success) {
+							CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "TIMEOUT ERROR!!!\nDoing some sudoku...", block.getIdChain()));
+							p.destroyForcibly();
+							Thread.sleep(2);
+						}
+						
+						deleteDirectory(path);
 					} catch (IOException e) {
-						e.printStackTrace();
+						StringWriter sw = new StringWriter();
+						e.printStackTrace(new PrintWriter(sw));
+						String exception = sw.toString();
+						CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), exception, block.getIdChain()));
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -102,6 +112,17 @@ public class DockerManager implements Runnable {
 	
 	public static String printResults(Process process) throws IOException {
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	    String line = "";
+	    String output = "";
+	    while ((line = reader.readLine()) != null) {
+	        //System.out.println(line);
+	    	output += line + "\n";
+	    }
+	    return output;
+	}
+	
+	public static String printError(Process process) throws IOException {
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 	    String line = "";
 	    String output = "";
 	    while ((line = reader.readLine()) != null) {

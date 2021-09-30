@@ -65,22 +65,28 @@ public class DockerManager implements Runnable {
 						boolean success = p.waitFor(30, TimeUnit.SECONDS);
 
 						System.out.println(path.toString());
-						
-						if (p.isAlive()) {
+
+						ProcessBuilder runpb = new ProcessBuilder("docker", "run", "--rm", "-v", path.toString() + ":/usr/src/myapp", "-w", "/usr/src/myapp", "openjdk:16", "java", "Main");
+						Process runProcess = runpb.start();
+						boolean runSuccess = runProcess.waitFor(60, TimeUnit.SECONDS);
+
+						if (p.isAlive() || runProcess.isAlive()) {
 							CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "Could not get exit code as process is still running", block.getIdChain()));
 						} else {
 							String exitValue = String.format("Exited with code: %d", p.exitValue());
 							CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), exitValue, block.getIdChain()));
 						}
 						CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "Errors:\n" + printError(p), block.getIdChain()));
+						CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "Errors:\n" + printError(runProcess), block.getIdChain()));
 						CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "Output:\n" + printResults(p), block.getIdChain()));
-						
-						if (!success) {
+						CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "Output:\n" + printResults(runProcess), block.getIdChain()));
+
+						if (!success || !runSuccess) {
 							CodeQueue.codeReturns.add(new CodeReturn(block.getBotType(), "TIMEOUT ERROR!!!\nDoing some sudoku...", block.getIdChain()));
 							p.destroyForcibly();
 							Thread.sleep(2);
 						}
-						
+
 						deleteDirectory(path);
 					} catch (IOException e) {
 						StringWriter sw = new StringWriter();

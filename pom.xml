@@ -5,7 +5,19 @@
 	<groupId>com.octoconsulting</groupId>
 	<artifactId>coffeebean</artifactId>
 	<version>1.0-BETA</version>
-	<name>CoffeeBean</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>14</source>
+                    <target>14</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <name>CoffeeBean</name>
 	<description>Remote code executor for various chat programs</description>
 
 	<properties>

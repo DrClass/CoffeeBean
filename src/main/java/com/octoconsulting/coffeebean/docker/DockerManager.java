@@ -99,6 +99,15 @@ public class DockerManager implements Runnable {
 				execute.add("python");
 				execute.add("Main.py");
 				break;
+			case CPP:
+				compile.add(block.getLanguage().container());
+				compile.add("g++");
+				compile.add("-o");
+				compile.add("Main");
+				compile.add("Main.cpp");
+				execute.add(block.getLanguage().container());
+				execute.add("./Main");
+				break;
 			default:
 				break;
 		}
@@ -139,6 +148,15 @@ public class DockerManager implements Runnable {
 				execute.add("python");
 				execute.add(file.getFileName() + "." + file.getLanguage().fileExtension());
 				break;
+			case CPP:
+				compile.add(file.getLanguage().container());
+				compile.add("g++");
+				compile.add("-o");
+				compile.add(file.getFileName());
+				compile.add(file.getFileName()+"."+file.getLanguage().fileExtension());
+				execute.add(file.getLanguage().container());
+				execute.add("./" + file.getFileName());
+				break;
 			default:
 				break;
 		}
@@ -178,6 +196,15 @@ public class DockerManager implements Runnable {
 				execute.add(repo.getLanguage().container());
 				execute.add("python");
 				execute.add(repo.getMain());
+				break;
+			case CPP:
+				compile.add(repo.getLanguage().container());
+				compile.add("g++");
+				compile.add("-o");
+				compile.add("Main");
+				compile.add(repo.getMain().strip());
+				execute.add(repo.getLanguage().container());
+				execute.add("./Main");
 				break;
 			default:
 				break;

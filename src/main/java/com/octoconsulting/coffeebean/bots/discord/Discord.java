@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -46,7 +47,7 @@ public class Discord {
 					if (MessageUtils.hasCodeBlock(event.getMessageContent())) {
 						CodeBlock block = new CodeBlock(BotType.DISCORD,
 								Language.valueOf(
-										MessageUtils.extractCodeLanguage(event.getMessageContent()).toUpperCase()),
+										MessageUtils.extractCodeLanguage(Pattern.compile("(?i)c\\+\\+").matcher(event.getMessageContent()).replaceFirst("cpp")).toUpperCase()),
 								MessageUtils.extractCodeBlock(event.getMessageContent()), buildIdTrace(event));
 						CodeQueue.addToQueue(block);
 					} else if (MessageUtils.hasGitHubBlobLink(event.getMessageContent())) {

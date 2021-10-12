@@ -1,5 +1,6 @@
 package com.octoconsulting.coffeebean.utils;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -17,6 +18,7 @@ public class Selenium {
 		String code = driver.getPageSource();
 		code = code.substring(84, code.indexOf("</pre></body></html>"));
 		driver.close();
+		code = StringEscapeUtils.unescapeHtml4(code);
 		return code;
 	}
 	

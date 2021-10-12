@@ -108,6 +108,13 @@ public class DockerManager implements Runnable {
 				execute.add(block.getLanguage().container());
 				execute.add("./Main");
 				break;
+			case GO:
+				compile.add(block.getLanguage().container());
+				compile.add("go");
+				compile.add("build");
+				compile.add("Main.go");
+				execute.add(block.getLanguage().container());
+				execute.add("./Main");
 			default:
 				break;
 		}
@@ -157,6 +164,13 @@ public class DockerManager implements Runnable {
 				execute.add(file.getLanguage().container());
 				execute.add("./" + file.getFileName());
 				break;
+			case GO:
+				compile.add(file.getLanguage().container());
+				compile.add("go");
+				compile.add("build");
+				compile.add(file.getFileName()+"."+file.getLanguage().fileExtension());
+				execute.add(file.getLanguage().container());
+				execute.add("./" + file.getFileName());
 			default:
 				break;
 		}
@@ -206,6 +220,13 @@ public class DockerManager implements Runnable {
 				execute.add(repo.getLanguage().container());
 				execute.add("./Main");
 				break;
+			case GO:
+				compile.add(repo.getLanguage().container());
+				compile.add("go");
+				compile.add("build");
+				compile.add(repo.getMain()+"."+repo.getLanguage().fileExtension());
+				execute.add(repo.getLanguage().container());
+				execute.add("./" + repo.getMain());
 			default:
 				break;
 		}

@@ -3,7 +3,8 @@ package com.octoconsulting.coffeebean.utils;
 public enum Language {
 	JAVA("openjdk:16", "java"),
 	PYTHON("python:3-slim", "py"),
-	CPP("gcc:4.9", "cpp");
+	CPP("gcc:11.2", "cpp"),
+	GO("golang:1.17", "go");
 	
 	private String container;
 	private String fileExtension;

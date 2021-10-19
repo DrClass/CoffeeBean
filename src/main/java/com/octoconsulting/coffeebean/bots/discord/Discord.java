@@ -63,7 +63,7 @@ public class Discord {
 										MessageUtils.extractGitHubRepoLink(event.getMessageContent())),
 								buildIdTrace(event));
 						CodeQueue.addToQueue(codeRepo);
-						event.getMessage().reply(codeRepo.toString());
+						//event.getMessage().reply(codeRepo.toString());
 					} else {
 						CodeQueue.codeReturns.add(new CodeReturn(BotType.DISCORD, "Error: No code or valid links detected.", buildIdTrace(event)));
 					}

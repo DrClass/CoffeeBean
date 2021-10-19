@@ -18,7 +18,7 @@ import com.octoconsulting.coffeebean.objects.CodeReturn;
 import com.octoconsulting.coffeebean.utils.Language;
 import com.octoconsulting.coffeebean.bots.BotType;
 
-public class Web extends Thread {
+public class Web {
 	public static ServerSocket socket;
 	public static BufferedReader in;
 	public static PrintWriter out;
@@ -26,8 +26,9 @@ public class Web extends Thread {
 	public static LinkedBlockingQueue<CodeReturn> outMessages = new LinkedBlockingQueue<CodeReturn>();
 	
 	public Web() {
+		System.out.println("Web constructor called");
 		try {
-			socket = new ServerSocket(3001);
+			socket = new ServerSocket(3051);
 			Socket client = socket.accept();
 			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			out = new PrintWriter(client.getOutputStream());
@@ -35,6 +36,7 @@ public class Web extends Thread {
 				while (true) {
 					try {
 						String message = in.readLine();
+						System.out.println("MESSAGE RECIEVED: " + message);
 						// We don't actually need an id for this one, so just make a random one.
 						List<String> idChain = new ArrayList<String>();
 						idChain.add(String.valueOf(new Random().nextLong()));
@@ -51,6 +53,7 @@ public class Web extends Thread {
 					if (outMessages.peek() != null) {
 						try {
 							CodeReturn codeReturn = outMessages.take();
+							System.out.println("MESSAGE POSTED: " + codeReturn.getOutput());
 							out.println(codeReturn.getOutput());
 							out.flush();
 						} catch (InterruptedException e) {
@@ -58,7 +61,7 @@ public class Web extends Thread {
 						}
 					}
 				}
-			});
+			}).start();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -68,8 +71,11 @@ public class Web extends Thread {
 		outMessages.add(codeReturn);
 	}
 	
-	public void run() {
-		@SuppressWarnings("unused")
-		Web web = new Web();
+	public static void run() {
+		new Thread(() -> {
+			Web web = new Web();
+		}).start();
+		//@SuppressWarnings("unused")
+		//Web web = new Web();
 	}
 }

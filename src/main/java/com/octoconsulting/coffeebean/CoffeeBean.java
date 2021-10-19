@@ -9,8 +9,9 @@ public class CoffeeBean {
 	
 	public static void main(String[] args) {
 		Discord.init();
-		//new Thread(new Slack()).start();
+		new Thread(new Slack()).start();
 		//new Thread(new Web()).start();
+		//Web.run();
 		new Thread(new DockerManager()).start();
 		new Thread(new CodeQueue()).start();
 	}

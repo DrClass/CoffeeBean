@@ -5,6 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.octoconsulting.coffeebean.bots.discord.Discord;
 import com.octoconsulting.coffeebean.bots.slack.Slack;
+import com.octoconsulting.coffeebean.bots.web.Web;
 import com.octoconsulting.coffeebean.objects.CodeBlock;
 import com.octoconsulting.coffeebean.objects.CodeFile;
 import com.octoconsulting.coffeebean.objects.CodeRepo;
@@ -47,6 +48,8 @@ public class CodeQueue implements Runnable {
 								break;
 							case TEAMS:
 								break;
+							case WEB:
+								Web.reply(output);
 							default:
 								break;
 						}
